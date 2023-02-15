@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String       @id @default(uuid())
+  username   String
+  email      String       @unique
+  password   String
+  user_type  String
+  teacher    Teacher[]
+  student    Student[]
+  forgotPass ForgotPass[]
+}
+
+model Teacher {
+  id      String   @id @default(uuid())
+  User    User?    @relation(fields: [userId], references: [id])
+  userId  String?
+  courses Course[]
+}
+
+model Student {
+  id         String       @id @default(uuid())
+  User       User?        @relation(fields: [userId], references: [id])
+  userId     String?
+  attendence Attendence[]
+}
+
+model Course {
+  id            String       @id @default(uuid())
+  course_name   String
+  description   String
+  slug          String
+  schedule_date DateTime
+  Teacher       Teacher?     @relation(fields: [teacherId], references: [id])
+  teacherId     String?
+  roomId        String       @default("123")
+  hostId        String       @default("abc")
+  attendence    Attendence[]
+}
+
+model ForgotPass {
+  id        String   @id @default(uuid())
+  otp       String
+  expiresAt DateTime
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime @default(now())
+}
+
+model Attendence {
+  id        String   @id @default(uuid())
+  Course    Course?  @relation(fields: [courseId], references: [id])
+  courseId  String?
+  join_time DateTime
+  duration  Int      @default(0)
+  Student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
+
+  @@unique([studentId, courseId])
+}
