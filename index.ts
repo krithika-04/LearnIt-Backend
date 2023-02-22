@@ -4,13 +4,19 @@ import cors from "koa2-cors";
 import logger from "koa-logger";
 import Router from "koa-router";
 import {config} from "./config/config"
+import { createServer } from "http";
+import { Server } from "socket.io";
 //import * as socketio from "socket.io";
 //import {Socket} from './socketManager'
 const router = new Router()
 const app = new Koa()
 const PORT = config.port;
-let http = require("http")
-let httpServer = http.createServer(app)
+let httpServer = createServer(app.callback());
+const socketIO = new Server(httpServer, {
+  cors: {
+      origin: "http://localhost:5173"
+  }
+});
 //const io = require("socket.io")(httpServer);
 app.use (bodyParser({
  // formidable:{uploadDir: './uploads'},
@@ -22,6 +28,12 @@ app.use(
     origin:"*"
   })
 );
+socketIO.on('connection', (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on('disconnect', () => {
+    console.log('🔥: A user disconnected');
+  });
+});
 app.use(logger())
 require("./routes/auth.routes")(app);
 require("./routes/course.routes")(app);
@@ -41,7 +53,7 @@ require("./routes/class.routes")(app);
 //   }
 // });
 //app.use(router.routes())
-const server = app
+const server =httpServer
   .listen(PORT, async()=>{
     console.log(`server running on port ${PORT}`)
   })

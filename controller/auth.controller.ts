@@ -80,6 +80,10 @@ let login = async (ctx:Koa.Context) => {
         });
       } catch (error) {
         // console.log("hey")
+        ctx.body={
+          message:error.message,
+          status:false
+        }
         console.log( error.message) 
       }
     }
@@ -177,7 +181,12 @@ let login = async (ctx:Koa.Context) => {
         ctx.cookies.set("token")
     
         return ctx.body={ message: "user signed out successfully" };
-      } catch (error) {console.log(error)}
+      } catch (error) {
+        ctx.body={
+          message:error.message,
+          status:false
+        }
+        console.log(error)}
     }
     let forgotPass = async (ctx:Koa.Context)=>{
       try {
@@ -191,7 +200,7 @@ let login = async (ctx:Koa.Context) => {
         if (user_data == null) {
           ctx.status=404
           return ctx.body={
-            message: "Email not registred.Please register to continue",
+            message: "Email not registered.Please register to continue",
             success: false,
           }
         } //user exist and create one time link valid for 15 mins
@@ -230,10 +239,9 @@ let login = async (ctx:Koa.Context) => {
                 message: "Couldn't send mail",
                 success: false,
               }
-              return;
+              
             }
-         
-           console.log("hyy")
+
            resolve();
           });
         })
@@ -284,7 +292,7 @@ let login = async (ctx:Koa.Context) => {
          
       const payload=jwt.verify(token,secret)
           const salt = await bcrypt.genSaltSync(10);
-          await bcrypt.hash(password, salt, async (err, hash) => {
+           bcrypt.hash(password, salt, async (err, hash) => {
             if (err) throw err;
     
             password = hash;
@@ -351,7 +359,7 @@ let login = async (ctx:Koa.Context) => {
                 await prisma.forgotPass.delete({ where: { id: verifiDetails.id } });
                 return ctx.body={
                   status: true,
-                  message: "otp verifed succesfully",
+                  message: "otp verified successfully",
                 };
               }
             }

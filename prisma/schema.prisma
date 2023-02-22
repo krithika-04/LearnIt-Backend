@@ -16,22 +16,22 @@ model User {
   email      String       @unique
   password   String
   user_type  String
-  teacher    Teacher[]
-  student    Student[]
+  teacher    Teacher?
+  student    Student?
   forgotPass ForgotPass[]
 }
 
 model Teacher {
   id      String   @id @default(uuid())
   User    User?    @relation(fields: [userId], references: [id])
-  userId  String?
-  courses Course[]
+  userId  String?  @unique
+  courses Course[] 
 }
 
 model Student {
   id         String       @id @default(uuid())
   User       User?        @relation(fields: [userId], references: [id])
-  userId     String?
+  userId     String?      @unique
   attendence Attendence[]
 }
 

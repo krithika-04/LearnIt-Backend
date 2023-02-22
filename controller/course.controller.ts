@@ -40,18 +40,22 @@ let fetchCourseS =async (ctx:Koa.Context) => {
 let fetchCourseT =async (ctx:Koa.Context) => {
   try {
     const user_id =ctx.params.id ;
-    const {id} = await prisma.teacher.findFirst({where:{userId:user_id},select:{id:true}})
-    const courseData = await prisma.course.findMany({
-      // Returns all courses
-      where:{teacherId:id},
-      include: {
-        Teacher:{}
+    const courses = (await prisma.teacher.findFirst({
+      where: {
+        userId: user_id
       },
-    })
+        include: {
+          courses: true
+        }
+    })).courses;
+
+    console.log(courses);
+
+
     
     ctx.status=200;
    return ctx.body={
-      data:courseData,
+      data:courses,
       status:true
     }
   } catch (error) {
