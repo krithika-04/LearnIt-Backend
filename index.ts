@@ -55,7 +55,7 @@ require("./routes/class.routes")(app);
 //app.use(router.routes())
 const server =httpServer
   .listen(PORT, async()=>{
-    console.log(`server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
   })
    .on ("error",err=>{
     console.error(err)
