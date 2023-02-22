@@ -3,23 +3,12 @@ import Koa from 'koa';
 const prisma = new PrismaClient()
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-//const bcrypt = require("bcryptjs");
-//const jwt = require("jsonwebtoken");
-import nodemailer from "nodemailer" 
-import otpGenerator from "otp-generator"
-import { verify } from "crypto";
-//const nodemailer = require("nodemailer");
+import {sendMail} from '../utils/SendMail'
 require("dotenv").config();
 const key = process.env.secret;
 const app:Koa = new Koa();
 
-const transporter = nodemailer.createTransport({
-  service: "hotmail",
-  auth: {
-    user: process.env.mailid,
-    pass: "black&white12",
-  },
-});
+
 // client.messages
 //       .create({body: 'Hi there', from: '+15103694272', to: '+919361422286'})
 //       .then(message => console.log(message.sid));
@@ -229,22 +218,7 @@ let login = async (ctx:Koa.Context) => {
         //     subject: "Password reset request",
         //     html: `Password reset request has been initiated please enter the otp below to reset the password <b>${otp}</b>. Note: The otp will be active for only 1 hour`,
         //   };
-         await new Promise<void>((resolve,reject)=>{
-          transporter.sendMail(options, function (err :any, info :any) {
-            if (err) {
-              console.log(err);
-              reject(err)
-              ctx.status=400
-              return ctx.body={
-                message: "Couldn't send mail",
-                success: false,
-              }
-              
-            }
-
-           resolve();
-          });
-        })
+        sendMail(options,ctx)
         //  const saltrounds = 10;
         //  const hashedotp = await bcrypt.hash(otp, saltrounds);
         //  const date = new Date();
