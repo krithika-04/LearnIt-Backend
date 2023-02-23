@@ -218,7 +218,7 @@ let login = async (ctx:Koa.Context) => {
         //     subject: "Password reset request",
         //     html: `Password reset request has been initiated please enter the otp below to reset the password <b>${otp}</b>. Note: The otp will be active for only 1 hour`,
         //   };
-        sendMail(options,ctx)
+       await sendMail(options,ctx)
         //  const saltrounds = 10;
         //  const hashedotp = await bcrypt.hash(otp, saltrounds);
         //  const date = new Date();
