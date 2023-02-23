@@ -4,6 +4,15 @@ const prisma = new PrismaClient()
 let addCourse =async (ctx:Koa.Context) => {
     try {
         const course = ctx.request.body;
+        const isEmpty = !Object.values(course).every(x => x !== null && x !== '');
+        if(isEmpty)
+       {ctx.status=404;
+        return   ctx.body={
+        message:"all details are required to add the course!",
+        status:false
+
+       } 
+        }
         const user_id =ctx.params.id ;
         const {id} = await prisma.teacher.findFirst({where:{userId:user_id},select:{id:true}})
          console.log(id)
@@ -15,7 +24,7 @@ let addCourse =async (ctx:Koa.Context) => {
             return  ctx.body={ message: "Course created",status:true ,data:courseData};
     } catch (error) {
       ctx.status=400
-      ctx.body={ message: error.message };
+      ctx.body={ message: error.message,status:false };
     }  
 }
 let fetchCourseS =async (ctx:Koa.Context) => {
