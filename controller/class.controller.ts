@@ -11,10 +11,6 @@ const makeAttendance=async (ctx:Koa.Context) => {
     console.log("date ",new Date())
     const isExist = await prisma.attendence.findFirst({where:{AND:[{studentId:id,courseId:courseId}]}})
     if(isExist){
-        // const date = new Date();
-        // const duration = Math.floor(((date.getTime() - isExist.join_time.getTime())/1000)/60);
-        // console.log(duration);
-        // attendanceData.duration=duration;
         let updateData = await prisma.attendence.update({where:{id:isExist.id},data:{...attendanceData}})
 
         return ctx.body={
@@ -32,9 +28,6 @@ const makeAttendance=async (ctx:Koa.Context) => {
             data:addData
         }
     }
-  
-    
-   
    } catch (error) {
     ctx.status=400;
     ctx.body={
@@ -42,7 +35,6 @@ const makeAttendance=async (ctx:Koa.Context) => {
         error:error.message
     }
    }
-    
 }
 const leaveClass =async (ctx:Koa.Context) => {
     try {
@@ -73,16 +65,12 @@ const leaveClass =async (ctx:Koa.Context) => {
                 status:false
             }
         }
-      
-        
-       
        } catch (error) {
         ctx.status=400;
         ctx.body={
             status:false,
             error:error.message
         }
-       }
-        
+       }    
 }
 export {makeAttendance,leaveClass}
