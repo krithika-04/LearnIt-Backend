@@ -207,7 +207,7 @@ let forgotPass = async (ctx: Koa.Context) => {
       //     subject: "Password reset request",
       //     html: `Password reset request has been initiated please enter the otp below to reset the password <b>${otp}</b>. Note: The otp will be active for only 1 hour`,
       //   };
-      await sendMail(options, ctx);
+      awaitawait sendMail(options, ctx);
       //  const saltrounds = 10;
       //  const hashedotp = await bcrypt.hash(otp, saltrounds);
       //  const date = new Date();
@@ -341,65 +341,67 @@ let verifyOtp = async (ctx: Koa.Context) => {
 //       country:user_data.country
 //     }
 
-//   } catch (error) {
-//     return ctx.body={
-//       "error":error
-//     }
-//   }
-// }
-// exports.editProfile = async (ctx:any)=>{
-//   try {
-//     const update_data = ctx.request.body;
-
-//     const update = await prisma.address.update({
-//       where:{id:update_data.id},
-//       data:update_data
-//     })
-//     return ctx.body={
-//       "message":"Address update successful",
-//       "data":update
-//     }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-// exports.deleteProfile = async (ctx:any)=>{
-//   try {
-//     const {id,stuId} = ctx.request.body;
-//     const deleteAddress = await prisma.address.deleteMany({
-//       where:{id:id,studentId:stuId}
-//     })
-//     return ctx.body={
-//       "data":deleteAddress,
-//       "message":"deletion successful"
-//     }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-// exports.addProfile = async(ctx:any)=>{
-//   try {
-//     const {studentId,...addData} = ctx.request.body;
-
-//     const add =  await  prisma.address.create({
-//       data: {...addData,
-//         student: {
-//            connect: {
-//             id: studentId
-//            }
-//         }
-//       }
-//     })
-//     return ctx.body={
-//       "data":add,
-//       "message":"Address added"
-//     }
-
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-let hello = async (ctx: Koa.Context) => {
-  ctx.body = { message: "welcome!!!" };
-};
-export { login, logout, register, forgotPass, resetPass, verifyOtp, hello };
+  //   } catch (error) {
+  //     return ctx.body={
+  //       "error":error
+  //     }
+  //   }
+  // }
+  // exports.editProfile = async (ctx:any)=>{
+  //   try {
+  //     const update_data = ctx.request.body;
+      
+     
+      
+  //     const update = await prisma.address.update({
+  //       where:{id:update_data.id},
+  //       data:update_data
+  //     })
+  //     return ctx.body={
+  //       "message":"Address update successful",
+  //       "data":update
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  // exports.deleteProfile = async (ctx:any)=>{
+  //   try {
+  //     const {id,stuId} = ctx.request.body;
+  //     const deleteAddress = await prisma.address.deleteMany({
+  //       where:{id:id,studentId:stuId}
+  //     })
+  //     return ctx.body={
+  //       "data":deleteAddress,
+  //       "message":"deletion successful"
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  // exports.addProfile = async(ctx:any)=>{
+  //   try {
+  //     const {studentId,...addData} = ctx.request.body;
+      
+  //     const add =  await  prisma.address.create({
+  //       data: {...addData,
+  //         student: { 
+  //            connect: {
+  //             id: studentId
+  //            }
+  //         }
+  //       }
+  //     })
+  //     return ctx.body={
+  //       "data":add,
+  //       "message":"Address added"
+  //     }
+    
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  let hello = async(ctx:Koa.Context)=>{
+    ctx.body={"message":"welcome!!!"}
+  }
+  export{login,logout,register,forgotPass,resetPass,verifyOtp,hello}
