@@ -4,7 +4,9 @@ const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { sendMail } from "../utils/SendMail";
+
 require("dotenv").config();
+const otpGenerator = require('otp-generator')
 const key = process.env.secret;
 const app: Koa = new Koa();
 let login = async (ctx: Koa.Context) => {
@@ -169,7 +171,6 @@ let logout = async (ctx: Koa.Context) => {
 let forgotPass = async (ctx: Koa.Context) => {
   try {
     const userMail = ctx.request.body.email;
-
     const user_data = await prisma.user.findUnique({
       where: { email: userMail },
     });
@@ -180,45 +181,45 @@ let forgotPass = async (ctx: Koa.Context) => {
       return (ctx.body = {
         message: "Email not registered.Please register to continue",
         success: false,
-      });
-    } //user exist and create one time link valid for 15 mins
+      });0
+    } //user exist and create one time password valid for 10 mins
     else {
-      await prisma.forgotPass.deleteMany({ where: { userId: user_data.id } });
+      await prisma.forgotPass.deleteMany({ where: { email: user_data.email } });
       const fp_secret = key + user_data.password;
       const payload = {
         email: user_data.email,
         id: user_data.id,
       };
       //  res.json(user_data.email)
-      const token = jwt.sign(payload, fp_secret, { expiresIn: "15m" });
-      const link = `http://localhost:5173/resetPassword/${user_data.id}/${token}`;
-      console.log(link);
-      console.log(user_data.email);
-      const options = {
-        from: process.env.mailid,
-        to: user_data.email,
-        subject: "Password reset request",
-        html: `Password reset request has been initiated please click on the link below to reset the password ${link} . Note: The link will be active for only 15 mins`,
-      };
-      //   let otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false,digits:true });
-      //   const options = {
-      //     from: process.env.mailid,
-      //     to: user_data.email,
-      //     subject: "Password reset request",
-      //     html: `Password reset request has been initiated please enter the otp below to reset the password <b>${otp}</b>. Note: The otp will be active for only 1 hour`,
-      //   };
-      awaitawait sendMail(options, ctx);
-      //  const saltrounds = 10;
-      //  const hashedotp = await bcrypt.hash(otp, saltrounds);
-      //  const date = new Date();
-      //  date.setMinutes(date.getMinutes() + 10);
-      //  console.log(date);
-      //  const verifiData = {
-      //   userId: user_data.id,
-      //   otp: hashedotp,
-      //   expiresAt: date,
+      // const token = jwt.sign(payload, fp_secret, { expiresIn: "15m" });
+      // const link = `http://localhost:5173/resetPassword/${user_data.id}/${token}`;
+      // console.log(link);
+      // console.log(user_data.email);
+      // const options = {
+      //   from: process.env.mailid,
+      //   to: user_data.email,
+      //   subject: "Password reset request",
+      //   html: `Password reset request has been initiated please click on the link below to reset the password ${link} . Note: The link will be active for only 15 mins`,
       // };
-      // await prisma.forgotPass.create({data:verifiData})
+        let otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false,digits:true });
+        const options = {
+          from: process.env.mailid,
+          to: user_data.email,
+          subject: "Password reset request",
+          html: `Password reset request has been initiated please enter the otp below to reset the password <b>${otp}</b>. Note: The otp will be active for only 10 mins`,
+        };
+      await sendMail(options, ctx);
+       const saltrounds = 10;
+       const hashedotp = await bcrypt.hash(otp, saltrounds);
+       const date = new Date();
+       date.setMinutes(date.getMinutes() + 10);
+       console.log(date);
+       const verifiData = {
+        email: user_data.email,
+        otp: hashedotp,
+        expiresAt: date,
+      };
+      await prisma.forgotPass.create({data:verifiData})
       return (ctx.body = {
         message: "Password reset link has been sent to your email",
         success: true,
@@ -287,12 +288,12 @@ let resetPass = async (ctx: Koa.Context) => {
 };
 let verifyOtp = async (ctx: Koa.Context) => {
   try {
-    let { user_id, otp } = ctx.request.body;
-    console.log("hello");
-    if (!user_id || !otp) throw new Error("Otp details are empty");
+    let { email, otp } = ctx.request.body;
+    console.log(ctx.request.body);
+    if (!email || !otp) throw new Error("Otp details are empty");
     else {
       const verifiDetails = await prisma.forgotPass.findFirst({
-        where: { userId: user_id },
+        where: { email: email },
       });
       if (verifiDetails == null) {
         //no records

@@ -18,7 +18,6 @@ model User {
   user_type  String
   teacher    Teacher?
   student    Student?
-  forgotPass ForgotPass[]
 }
 
 model Teacher {
@@ -52,8 +51,7 @@ model ForgotPass {
   id        String   @id @default(uuid())
   otp       String
   expiresAt DateTime
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
+  email     String
   createdAt DateTime @default(now())
 }
 

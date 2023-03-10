@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import Koa from "koa";
+
 const prisma = new PrismaClient();
 let addCourse = async (ctx: Koa.Context) => {
   try {
@@ -42,13 +43,25 @@ let fetchCourseS = async (ctx: Koa.Context) => {
     // Returns all courses
     const courseData = await prisma.course.findMany({
       include: {
-        Teacher: {},
+        Teacher: {
+          include: {
+            User: {},
+          },
+        },
       },
     });
-
+    const courses = courseData.map((course) => {
+      const teacherName = course.Teacher.User.username;
+      delete course.Teacher;
+      return {
+        ...course,
+        teacherName: teacherName,
+      };
+    });
     ctx.status = 200;
+    console.log(courses);
     return (ctx.body = {
-      data: courseData,
+      data: courses,
       status: true,
     });
   } catch (error) {
@@ -65,16 +78,32 @@ let fetchCourseT = async (ctx: Koa.Context) => {
           userId: user_id,
         },
         include: {
-          courses: true,
+          courses: {
+            include: {
+              Teacher: {
+                include: {
+                  User: {},
+                },
+              },
+            },
+          },
         },
       })
     ).courses;
+    const courseData = courses.map((course) => {
+      const teacherName = course.Teacher.User.username;
+      delete course.Teacher;
+      return {
+        ...course,
+        teacherName: teacherName,
+      };
+    });
 
-    console.log(courses);
+    console.log(courseData);
 
     ctx.status = 200;
     return (ctx.body = {
-      data: courses,
+      data: courseData,
       status: true,
     });
   } catch (error) {

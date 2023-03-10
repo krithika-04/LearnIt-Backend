@@ -10,7 +10,7 @@ const router = new Router()
 const app = new Koa()
 const PORT = config.port;
 let httpServer = createServer(app.callback());
-const socketIO = new Server(httpServer, {
+export const socketIO = new Server(httpServer, {
   cors: {
       origin: "*"
   }
@@ -24,10 +24,25 @@ app.use(
     origin:"*"
   })
 );
+// socketIO.on('connection', (socket) => {
+//   console.log(`⚡: ${socket.id} user just connected!`);
+//   socket.join("");
+//   socket.on('message', (data) => {
+//     socketIO.emit('messageResponse', data);
+//     console.log(data);
+//   });
+//   socket.on('disconnect', () => {
+//     console.log('🔥: A user disconnected');
+//   });
+// });
 socketIO.on('connection', (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on('join',({user_id,roomId})=>{
+  console.log("joined")
+      socket.join(roomId)
+  })
   socket.on('message', (data) => {
-    socketIO.emit('messageResponse', data);
+    socketIO.to(data.roomId).emit('messageResponse', data);
     console.log(data);
   });
   socket.on('disconnect', () => {
@@ -38,6 +53,7 @@ app.use(logger())
 require("./routes/auth.routes")(app);
 require("./routes/course.routes")(app);
 require("./routes/class.routes")(app);
+require("./routes/chat.routes")(app);
 const server =httpServer
   .listen(PORT, async()=>{
     console.log(`Server running on port ${PORT} 😇`)

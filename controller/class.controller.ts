@@ -73,4 +73,26 @@ const leaveClass =async (ctx:Koa.Context) => {
         }
        }    
 }
-export {makeAttendance,leaveClass}
+const fetchAttendance=async (ctx:Koa.Context) => {
+    try {
+     const course_id =ctx.params.id ;
+     const attendanceData = await prisma.attendence.findMany({
+        where:{
+            courseId:course_id
+        }
+     })
+     return ctx.body={
+        message:"fetch attendance data",
+        status:true,
+        data:attendanceData
+     }
+     
+    } catch (error) {
+     ctx.status=400;
+     ctx.body={
+         status:false,
+         error:error.message
+     }
+    }
+ }
+export {makeAttendance,leaveClass,fetchAttendance}
